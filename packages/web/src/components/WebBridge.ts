@@ -98,9 +98,9 @@ export class WebBridgeImpl implements WebObsidianBridge {
       return;
     }
     try {
-      const audioData = await this.store.exportAudio(text);
+      const { data } = await this.store.exportAudio(text);
       const hash = this.hashString(text).toString(16).slice(0, 8);
-      this.downloadBlob(audioData, `aloud-document-${hash}.mp3`);
+      this.downloadBlob(data, `aloud-document-${hash}.mp3`);
     } catch (ex) {
       if (ex instanceof DOMException && ex.name === "AbortError") {
         return;
@@ -130,10 +130,10 @@ export class WebBridgeImpl implements WebObsidianBridge {
 
     try {
       // Generate audio using the audio store
-      const audioData = await this.store.exportAudio(text);
+      const { data } = await this.store.exportAudio(text);
 
       // Create a blob and download it
-      const blob = new Blob([audioData], { type: "audio/mpeg" });
+      const blob = new Blob([data], { type: "audio/mpeg" });
       const url = URL.createObjectURL(blob);
 
       // Create filename

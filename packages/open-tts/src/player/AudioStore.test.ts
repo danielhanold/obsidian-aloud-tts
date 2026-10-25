@@ -2,7 +2,11 @@ import * as mobx from "mobx";
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { AudioCache, memoryStorage } from "./AudioCache";
 import { AudioSink, DecodedAudioData } from "./AudioSink";
-import { AudioStore, loadAudioStore } from "./AudioStore";
+import {
+  AudioStore,
+  formatFlaggedPassagesSuffix,
+  loadAudioStore,
+} from "./AudioStore";
 import {
   AudioData,
   TTSErrorInfo,
@@ -716,6 +720,98 @@ describe("AudioStore fidelity", () => {
       timeout: 2000,
     });
     expect(store.activeText!.fidelityWarning).toBe(true);
+  });
+});
+
+describe("exportAudio", () => {
+  let store: AudioStore | undefined;
+  afterEach(() => {
+    store?.destroy();
+  });
+
+  const pcmAudio = (fidelityWarning?: boolean): AudioData => ({
+    data: new Int16Array(2400).buffer,
+    format: "pcm",
+    pcmMetadata: { sampleRate: 24000, channels: 1, bitDepth: 16 },
+    ...(fidelityWarning ? { fidelityWarning } : {}),
+  });
+  const isMp3 = (buffer: ArrayBuffer): boolean => {
+    const bytes = new Uint8Array(buffer);
+    const id3 = String.fromCharCode(bytes[0], bytes[1], bytes[2]) === "ID3";
+    return id3 || (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0);
+  };
+  const longText = (sentences: number): string =>
+    Array.from({ length: sentences }, () => "a".repeat(2990) + ". ").join("");
+
+  test("converts pcm provider output to mp3 before returning it", async () => {
+    const call = vi.fn<TTSModel["call"]>(async () => pcmAudio());
+    store = createStore({ textToSpeech: { ...createTestModel(), call } });
+    const result = await store.exportAudio("Short text.");
+    expect(isMp3(result.data)).toBe(true);
+    expect(result.flaggedPassages).toBe(0);
+  });
+
+  const monoSink = (decoded: ArrayBuffer[] = []): FakeAudioSink =>
+    new FakeAudioSink({
+      decodeAudioData: async (ab: ArrayBuffer): Promise<DecodedAudioData> => {
+        decoded.push(ab);
+        return {
+          length: 1,
+          duration: 1 / 24000,
+          numberOfChannels: 1,
+          sampleRate: 24000,
+          getChannelData: () => new Float32Array(1),
+        };
+      },
+    });
+
+  test("converts each pcm chunk before concatenating a long export", async () => {
+    const decoded: ArrayBuffer[] = [];
+    const audioSink = monoSink(decoded);
+    const call = vi.fn<TTSModel["call"]>(async () => pcmAudio());
+    store = createStore({
+      audioSink,
+      textToSpeech: { ...createTestModel(), call },
+    });
+    await store.exportAudio(longText(3));
+    expect(call.mock.calls.length).toBeGreaterThan(1);
+    expect(decoded).toHaveLength(call.mock.calls.length);
+    expect(decoded.every(isMp3)).toBe(true);
+  });
+
+  test("counts flagged passages", async () => {
+    let calls = 0;
+    const call = vi.fn<TTSModel["call"]>(async () => {
+      calls += 1;
+      return pcmAudio(calls !== 2);
+    });
+    store = createStore({
+      audioSink: monoSink(),
+      textToSpeech: { ...createTestModel(), call },
+    });
+    const result = await store.exportAudio(longText(3));
+    expect(call).toHaveBeenCalledTimes(3);
+    expect(result.flaggedPassages).toBe(2);
+  });
+
+  test("rejects the export on a fidelity mismatch", async () => {
+    const call = vi.fn<TTSModel["call"]>(async () => {
+      throw new TTSErrorInfo("fidelity_mismatch");
+    });
+    store = createStore({ textToSpeech: { ...createTestModel(), call } });
+    await expect(store.exportAudio("Short text.")).rejects.toBeInstanceOf(
+      TTSErrorInfo,
+    );
+  });
+
+  test("formats the flagged passage suffix", () => {
+    expect(formatFlaggedPassagesSuffix(0)).toBe("");
+    expect(formatFlaggedPassagesSuffix(1)).toBe(
+      " (1 passage may differ from the text)",
+    );
+    expect(formatFlaggedPassagesSuffix(3)).toBe(
+      " (3 passages may differ from the text)",
+    );
   });
 });
 
