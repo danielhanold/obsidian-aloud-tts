@@ -14,7 +14,11 @@ import {
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { IsPlaying } from "./components/ObsidianIsPlaying";
-import { AudioStore } from "open-tts";
+import {
+  AudioStore,
+  ExportResult,
+  formatFlaggedPassagesSuffix,
+} from "open-tts";
 import { hashString } from "open-tts";
 import { TTSPluginSettingsStore } from "open-tts";
 import { TTSEditorBridge } from "@open-tts/ui";
@@ -162,9 +166,9 @@ export class ObsidianBridgeImpl implements ObsidianBridge {
     }
 
     new Notice("Generating audio, this may take some time…");
-    let bytes: ArrayBuffer;
+    let result: ExportResult;
     try {
-      bytes = await this.audio.exportAudio(text);
+      result = await this.audio.exportAudio(text);
     } catch (ex) {
       if (ex instanceof DOMException && ex.name === "AbortError") {
         new Notice("Audio export cancelled");
@@ -175,16 +179,17 @@ export class ObsidianBridgeImpl implements ObsidianBridge {
       return;
     }
 
+    const suffix = formatFlaggedPassagesSuffix(result.flaggedPassages);
     try {
       if (mode === "vault") {
         const folder = this.settings.settings.audioFolder;
         const vaultPath = `${folder}/${filename}`;
         await this.app.vault.adapter.mkdir(folder);
-        await this.app.vault.adapter.writeBinary(vaultPath, bytes);
-        new Notice(`Saved ${vaultPath}`);
+        await this.app.vault.adapter.writeBinary(vaultPath, result.data);
+        new Notice(`Saved ${vaultPath}${suffix}`);
       } else {
-        triggerBrowserDownload(bytes, filename);
-        new Notice(`Downloaded ${filename}`);
+        triggerBrowserDownload(result.data, filename);
+        new Notice(`Downloaded ${filename}${suffix}`);
       }
     } catch (ex) {
       console.error("Couldn't save audio!", ex);
@@ -263,11 +268,13 @@ export class ObsidianBridgeImpl implements ObsidianBridge {
       }
       try {
         new Notice(`Exporting ${filename}, this may take some time`);
-        const contents = await this.audio.exportAudio(text);
+        const result = await this.audio.exportAudio(text);
         await this.app.vault.adapter.mkdir(this.settings.settings.audioFolder);
-        await this.app.vault.adapter.writeBinary(filename, contents);
+        await this.app.vault.adapter.writeBinary(filename, result.data);
         removeLoadingState(finalReplacement);
-        new Notice(`Exported ${filename}`);
+        new Notice(
+          `Exported ${filename}${formatFlaggedPassagesSuffix(result.flaggedPassages)}`,
+        );
       } catch (ex) {
         console.error("Couldn't export audio!", ex);
         new Notice("Failed to export audio");

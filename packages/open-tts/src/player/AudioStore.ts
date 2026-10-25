@@ -8,8 +8,10 @@ import {
 import { AudioSystem } from "./AudioSystem";
 import { AudioText, AudioTextOptions } from "./AudioTextChunk";
 import { splitTextForExport } from "../util/misc";
-import { concatenateMp3Buffers } from "../util/audioProcessing";
-// AudioData is returned from provider calls, but exportAudio concatenates raw bytes
+import {
+  concatenateMp3Buffers,
+  convertToPlayableFormat,
+} from "../util/audioProcessing";
 
 /** Progress of an in-flight export, reported per text chunk. */
 export interface ExportProgress {
@@ -17,6 +19,19 @@ export interface ExportProgress {
   completed: number;
   /** Total chunks for this export. */
   total: number;
+}
+
+/** An exported MP3 and how many passages carry a fidelity warning. */
+export interface ExportResult {
+  data: ArrayBuffer;
+  flaggedPassages: number;
+}
+
+/** Suffix appended to export notices when passages may differ from the text. */
+export function formatFlaggedPassagesSuffix(count: number): string {
+  if (count === 0) return "";
+  if (count === 1) return " (1 passage may differ from the text)";
+  return ` (${count} passages may differ from the text)`;
 }
 
 /** High level track changer interface */
@@ -34,8 +49,8 @@ export interface AudioStore {
 
   closePlayer(): void;
 
-  /** exports an mp3 audio file. TODO make this better */
-  exportAudio(text: string): Promise<ArrayBuffer>;
+  /** exports an mp3 audio file and counts passages with a fidelity warning */
+  exportAudio(text: string): Promise<ExportResult>;
 
   /** Aborts the currently-running `exportAudio` at the next chunk boundary. */
   cancelExport(): void;
@@ -109,7 +124,7 @@ class AudioStoreImpl implements AudioStore {
     this.exportAbortController?.abort();
   }
 
-  async exportAudio(text: string): Promise<ArrayBuffer> {
+  async exportAudio(text: string): Promise<ExportResult> {
     const options = this.system.ttsModel.convertToOptions(this.system.settings);
 
     // Get model's practical character limit (most models have 4000-4096 limit)
@@ -136,34 +151,42 @@ class AudioStoreImpl implements AudioStore {
       if (text.length <= maxChunkSize) {
         setProgress({ completed: 0, total: 1 });
         throwIfAborted();
-        const audio = await this.system.ttsModel.call(
-          text,
-          options,
-          this.system.settings,
-          undefined,
-          signal,
+        const audio = await convertToPlayableFormat(
+          await this.system.ttsModel.call(
+            text,
+            options,
+            this.system.settings,
+            undefined,
+            signal,
+          ),
         );
         setProgress({ completed: 1, total: 1 });
-        // export remains mp3 for now; if not mp3, we could convert later
-        return audio.data;
+        return {
+          data: audio.data,
+          flaggedPassages: audio.fidelityWarning ? 1 : 0,
+        };
       }
 
       // Split text into chunks with context that respect sentence boundaries
       const chunksWithContext = splitTextForExport(text, maxChunkSize, 2);
       const renderable = chunksWithContext.filter((c) => c.text.trim());
       const decodedAudios: ArrayBuffer[] = [];
+      let flaggedPassages = 0;
       setProgress({ completed: 0, total: renderable.length });
 
       // Generate audio for each chunk
       for (const chunk of renderable) {
         throwIfAborted();
-        const audio = await this.system.ttsModel.call(
-          chunk.text,
-          options,
-          this.system.settings,
-          chunk.context,
-          signal,
+        const audio = await convertToPlayableFormat(
+          await this.system.ttsModel.call(
+            chunk.text,
+            options,
+            this.system.settings,
+            chunk.context,
+            signal,
+          ),
         );
+        if (audio.fidelityWarning) flaggedPassages += 1;
         decodedAudios.push(audio.data);
         setProgress({
           completed: decodedAudios.length,
@@ -173,7 +196,11 @@ class AudioStoreImpl implements AudioStore {
 
       throwIfAborted();
       // Concatenate all audio buffers into a single MP3
-      return await concatenateMp3Buffers(decodedAudios, this.system.audioSink);
+      const data = await concatenateMp3Buffers(
+        decodedAudios,
+        this.system.audioSink,
+      );
+      return { data, flaggedPassages };
     } finally {
       if (this.exportAbortController === controller) {
         this.exportAbortController = null;
