@@ -14,7 +14,7 @@ related: []
 discovered_from: []
 adrs: []
 spec: 'docs/superpowers/specs/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md'
-plan:
+plan: 'docs/superpowers/plans/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini.md'
 results:
 auto_groomable:
 hold:
@@ -31,6 +31,7 @@ reconciled: true
 | Artifact | Link |
 |---|---|
 | Spec | [2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md](../../superpowers/specs/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md) |
+| Plan | [2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini.md](../../superpowers/plans/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini.md) |
 <!-- docket:artifacts:end -->
 
 ## Why
