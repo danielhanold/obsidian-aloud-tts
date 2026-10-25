@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { runInAction } from "mobx";
 import React from "react";
-import { PlayerView } from "./PlayerView";
+import { PlayerView, TTSErrorInfoDetails } from "./PlayerView";
+import { TTSErrorInfo } from "open-tts";
 import type { PlayerViewProps } from "./PlayerView";
 import {
   createTestAudioStore,
@@ -204,5 +205,60 @@ describe("PlayerView", () => {
 
     expect(screen.getByText("Saving document audio... 1 of 3")).toBeTruthy();
     expect(screen.queryByText(/chunks/)).toBeNull();
+  });
+
+  it("shows an amber warning for a flagged passage without stopping playback", async () => {
+    const player = createTestAudioStore();
+    await player.startPlayer({
+      text: "Hello there.",
+      filename: "a.md",
+      start: 0,
+      end: 12,
+    });
+    const chunk = player.activeText!.currentChunk!;
+    await chunk.onceLoaded();
+    runInAction(() =>
+      chunk.setLoaded({ ...chunk.audio!, fidelityWarning: true }),
+    );
+
+    await renderPlayerView({ player });
+
+    expect(
+      screen.getByText(
+        "This passage may not have been read exactly as written.",
+      ),
+    ).toBeTruthy();
+    expect(player.activeText!.isPlaying).toBe(true);
+  });
+
+  it("shows no warning for a clean passage", async () => {
+    const player = createTestAudioStore();
+    await player.startPlayer({
+      text: "Hello there.",
+      filename: "a.md",
+      start: 0,
+      end: 12,
+    });
+    await player.activeText!.currentChunk!.onceLoaded();
+
+    await renderPlayerView({ player });
+
+    expect(
+      screen.queryByText(
+        "This passage may not have been read exactly as written.",
+      ),
+    ).toBeNull();
+  });
+
+  it("explains a discarded passage after a fidelity mismatch", () => {
+    render(
+      <TTSErrorInfoDetails error={new TTSErrorInfo("fidelity_mismatch")} />,
+    );
+
+    expect(
+      screen.getByText(
+        "The model did not read this passage as written, so the audio was discarded.",
+      ),
+    ).toBeTruthy();
   });
 });

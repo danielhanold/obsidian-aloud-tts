@@ -10,7 +10,7 @@ import { ToolbarOverflowMenu } from "./ToolbarOverflowMenu";
 import type { ToolbarOverflowMenuItem } from "./ToolbarOverflowMenu";
 import { TTSErrorInfo } from "open-tts";
 import { useTooltip } from "../util/TooltipContext";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, AlertTriangle } from "lucide-react";
 import { TTSActions } from "open-tts";
 
 type Availability = boolean | (() => boolean);
@@ -376,6 +376,8 @@ export const AudioStatusInfoContents: React.FC<{
     return <TTSErrorInfoView error={player.activeText.error} />;
   } else if (player.activeText?.isLoading) {
     return <Spinner className="tts-audio-status-loading" delay={500} />;
+  } else if (player.activeText?.fidelityWarning) {
+    return <FidelityWarningView />;
   } else if (
     audioElement &&
     player.activeText?.isPlaying &&
@@ -395,6 +397,17 @@ export const AudioStatusInfoContents: React.FC<{
     return null;
   }
 });
+
+export function FidelityWarningView(): React.ReactNode {
+  return (
+    <span className="tts-audio-status-warning" role="status">
+      <AlertTriangle className="tts-audio-status-warning-icon" size={16} />{" "}
+      <span className="tts-audio-status-warning-text">
+        This passage may not have been read exactly as written.
+      </span>
+    </span>
+  );
+}
 
 export function TTSErrorInfoView(props: {
   error: TTSErrorInfo;
@@ -431,6 +444,9 @@ export function TTSErrorInfoView(props: {
 }
 
 function getMoreInfo(error: TTSErrorInfo): string {
+  if (error.status === "fidelity_mismatch") {
+    return "The model did not read this passage as written, so the audio was discarded.";
+  }
   if (error.httpErrorCode === 401) {
     return "Please check your API key.";
   } else if (error.httpErrorCode === 429) {
