@@ -3,6 +3,11 @@ import {
   openAICallTextToSpeech,
   listOpenAIModels,
   OPENAI_API_URL,
+  openAITextToSpeech,
+  DEFAULT_OPENAI_MODELS,
+  supportsInstructions,
+  isDeprecatedOpenAIModel,
+  isRealtimeOpenAIModel,
 } from "./openai";
 import { TTSModelOptions } from "./tts-model";
 import { DEFAULT_SETTINGS } from "../player/TTSPluginSettings";
@@ -170,6 +175,83 @@ describe("OpenAI Model API", () => {
       await expect(listOpenAIModels(DEFAULT_SETTINGS)).rejects.toThrow(
         "Request failed 'HTTP 403 error'",
       );
+    });
+  });
+
+  describe("openAITextToSpeech.call routing", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("uses the speech endpoint for deprecated models", async () => {
+      vi.mocked(fetch).mockResolvedValue({
+        ok: true,
+        status: 200,
+        arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
+      } as unknown as Response);
+
+      const result = await openAITextToSpeech.call(
+        "Hello world",
+        { apiKey: "test-key", model: "tts-1", voice: "alloy" },
+        DEFAULT_SETTINGS,
+      );
+
+      expect(vi.mocked(fetch).mock.calls[0][0]).toBe(
+        `${OPENAI_API_URL}/v1/audio/speech`,
+      );
+      expect(result.format).toBe("mp3");
+    });
+
+    it("uses a realtime websocket for gpt-realtime-2.1-mini and never calls fetch", async () => {
+      const urls: string[] = [];
+      class MinimalWebSocket {
+        static CONNECTING = 0;
+        static OPEN = 1;
+        static CLOSING = 2;
+        static CLOSED = 3;
+        readyState = 0;
+        constructor(url: string) {
+          urls.push(url);
+        }
+        addEventListener(): void {}
+        removeEventListener(): void {}
+        send(): void {}
+        close(): void {
+          this.readyState = 3;
+        }
+      }
+      vi.stubGlobal("WebSocket", MinimalWebSocket);
+      const controller = new AbortController();
+
+      const pending = openAITextToSpeech.call(
+        "Hello world",
+        { apiKey: "test-key", model: "gpt-realtime-2.1-mini", voice: "marin" },
+        DEFAULT_SETTINGS,
+        {},
+        controller.signal,
+      );
+
+      expect(urls).toHaveLength(1);
+      expect(urls[0]).toContain("model=gpt-realtime-2.1-mini");
+      expect(fetch).not.toHaveBeenCalled();
+      controller.abort();
+      await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+    });
+  });
+
+  describe("DEFAULT_OPENAI_MODELS", () => {
+    it("lists gpt-realtime-2.1-mini first and labels the old models deprecated", () => {
+      expect(DEFAULT_OPENAI_MODELS[0].value).toBe("gpt-realtime-2.1-mini");
+      expect(supportsInstructions("gpt-realtime-2.1-mini")).toBe(true);
+      expect(isRealtimeOpenAIModel("gpt-realtime-2.1-mini")).toBe(true);
+      for (const m of ["gpt-4o-mini-tts", "tts-1", "tts-1-hd"]) {
+        expect(isDeprecatedOpenAIModel(m)).toBe(true);
+        expect(isRealtimeOpenAIModel(m)).toBe(false);
+        expect(DEFAULT_OPENAI_MODELS.find((x) => x.value === m)?.label).toMatch(
+          /\(deprecated\)$/,
+        );
+      }
+      expect(isDeprecatedOpenAIModel("gpt-realtime-2.1-mini")).toBe(false);
     });
   });
 });
