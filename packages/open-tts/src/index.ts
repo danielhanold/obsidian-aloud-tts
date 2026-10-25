@@ -25,5 +25,6 @@ export * from "./player/TTSPluginSettings";
 export * from "./player/onMultiTextChanged";
 export * from "./util/Minhash";
 export * from "./util/audioProcessing";
+export * from "./util/fidelity";
 export { default as cleanMarkup } from "./util/cleanMarkdown";
 export * from "./util/misc";
