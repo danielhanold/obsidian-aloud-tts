@@ -2,7 +2,7 @@
 id: 1
 slug: 'openai-realtime-tts-with-gpt-realtime-2-1-mini'
 title: 'OpenAI Realtime TTS with gpt-realtime-2.1-mini'
-status: 'in-progress'
+status: 'implemented'
 priority: 'high'
 type: 'feat'
 deliverable: 'pr'
@@ -20,7 +20,7 @@ auto_groomable:
 hold:
 branch_prefix:
 branch: 'feat/openai-realtime-tts-with-gpt-realtime-2-1-mini'
-pr:
+pr: 'https://github.com/danielhanold/obsidian-aloud-tts/pull/1'
 blocked_by:
 reconciled: true
 ---
@@ -61,3 +61,12 @@ OpenAI deprecated tts-1, tts-1-hd, and gpt-4o-mini-tts; they shut down on Januar
 ### 2026-10-25
 
 Unchanged against `main` at 81fce14: no Realtime/WebSocket code exists yet; spec, scope, and relations hold.
+
+## Build evidence
+
+<!-- docket:build-evidence:start -->
+command:  pnpm test
+result:   green
+head_sha: 096ff682c34de1e63c6d0a182d0ef6f06a813058
+ran_at:   2026-10-25T23:29:28Z
+<!-- docket:build-evidence:end -->
