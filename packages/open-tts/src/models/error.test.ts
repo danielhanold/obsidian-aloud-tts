@@ -69,6 +69,14 @@ describe("TTSErrorInfo", () => {
       expect(error401.isRetryable).toBe(false);
       expect(error404.isRetryable).toBe(false);
     });
+
+    it("should not retry fidelity mismatches even without an http code", () => {
+      expect(new TTSErrorInfo("fidelity_mismatch").isRetryable).toBe(false);
+    });
+
+    it("should not retry incomplete realtime responses", () => {
+      expect(new TTSErrorInfo("realtime_incomplete").isRetryable).toBe(false);
+    });
   });
 
   describe("ttsJsonMessage", () => {

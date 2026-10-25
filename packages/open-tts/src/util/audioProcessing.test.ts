@@ -1,8 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { pcmBufferToMp3Buffer, PcmToMp3Options } from "./audioProcessing";
+import {
+  convertToPlayableFormat,
+  pcmBufferToMp3Buffer,
+  PcmToMp3Options,
+} from "./audioProcessing";
 import { DecodedAudioData } from "../player/AudioSink";
 
 describe("audioProcessing", () => {
+  describe("convertToPlayableFormat fidelity warning", () => {
+    it("keeps the fidelity warning when converting pcm to mp3", async () => {
+      const out = await convertToPlayableFormat({
+        data: new Int16Array(2400).buffer,
+        format: "pcm",
+        fidelityWarning: true,
+        pcmMetadata: { sampleRate: 24000, channels: 1, bitDepth: 16 },
+      });
+      expect(out.format).toBe("mp3");
+      expect(out.fidelityWarning).toBe(true);
+    });
+
+    it("omits the fidelity warning when the source has none", async () => {
+      const out = await convertToPlayableFormat({
+        data: new Int16Array(2400).buffer,
+        format: "pcm",
+        pcmMetadata: { sampleRate: 24000, channels: 1, bitDepth: 16 },
+      });
+      expect("fidelityWarning" in out).toBe(false);
+    });
+  });
+
   describe("pcmBufferToMp3Buffer validation", () => {
     it("should reject unsupported bit depth", async () => {
       const buffer = new ArrayBuffer(16);
