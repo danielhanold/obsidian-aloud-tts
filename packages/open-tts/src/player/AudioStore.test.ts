@@ -700,6 +700,59 @@ describe("AudioStore fidelity", () => {
     expect(call).toHaveBeenCalledTimes(1);
   });
 
+  test("requests a mismatched chunk ahead of the playhead only once", async () => {
+    vi.useFakeTimers();
+    try {
+      const duration = 1;
+      const sink = new FakeAudioSink({
+        decodeAudioData: (): Promise<DecodedAudioData> =>
+          Promise.resolve({ duration } as DecodedAudioData),
+      });
+      const mismatched = "Penultimately there were three bottle tops. ";
+      const call = vi.fn<TTSModel["call"]>(
+        async (text: string): Promise<AudioData> => {
+          if (text === mismatched) {
+            throw new TTSErrorInfo("fidelity_mismatch");
+          }
+          return { data: new ArrayBuffer(0), format: "mp3" };
+        },
+      );
+      store = createStore({
+        audioSink: sink,
+        textToSpeech: { ...createTestModel(), call },
+      });
+      const text =
+        "First there was one bottle top. Then there were two bottle tops. " +
+        mismatched +
+        "Finally there were four bottle tops.";
+      const active = await store.startPlayer({
+        text,
+        filename: "f.md",
+        start: 0,
+        end: text.length,
+        minChunkLength: 1,
+      });
+      active.play();
+      await vi.advanceTimersByTimeAsync(2000);
+      sink.currentTime = duration;
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(active.position).toEqual(1);
+      sink.currentTime = duration * 2;
+      await vi.advanceTimersByTimeAsync(2000);
+      await vi.advanceTimersByTimeAsync(2000);
+
+      const mismatchCalls = call.mock.calls.filter(
+        (args) => args[0] === mismatched,
+      );
+      expect(mismatchCalls).toHaveLength(1);
+      expect(active.audio.chunks[2].failureInfo?.status).toBe(
+        "fidelity_mismatch",
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   test("exposes the current chunk's fidelity warning on the active text", async () => {
     const call = vi.fn<TTSModel["call"]>(
       async (): Promise<AudioData> => ({
