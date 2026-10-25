@@ -62,6 +62,7 @@ function createActiveAudioText(chunks: AudioTextChunk[]): ActiveAudioText {
     isPlaying: true,
     isLoading: false,
     error: undefined,
+    fidelityWarning: false,
     position: 8,
     lastPositionChange: Date.now(),
     currentChunk: chunks[8],

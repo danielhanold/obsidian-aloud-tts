@@ -3,7 +3,12 @@ import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { AudioCache, memoryStorage } from "./AudioCache";
 import { AudioSink, DecodedAudioData } from "./AudioSink";
 import { AudioStore, loadAudioStore } from "./AudioStore";
-import { TTSModel, TTSModelOptions } from "../models/tts-model";
+import {
+  AudioData,
+  TTSErrorInfo,
+  TTSModel,
+  TTSModelOptions,
+} from "../models/tts-model";
 import { DEFAULT_SETTINGS, TTSPluginSettings } from "./TTSPluginSettings";
 import { ActiveAudioText } from "./ActiveAudioText";
 import { createAudioSystem } from "./AudioSystem";
@@ -665,6 +670,52 @@ describe("AudioStore", () => {
       expect(tracks[2].rawText).toEqual(c);
       expect(tracks[2].end).toEqual(start + (a + c).length - startOfA.length);
     });
+  });
+});
+
+describe("AudioStore fidelity", () => {
+  let store: AudioStore | undefined;
+  afterEach(() => {
+    store?.destroy();
+  });
+
+  test("shows a fidelity mismatch as an error without re-requesting", async () => {
+    const call = vi.fn<TTSModel["call"]>(async () => {
+      throw new TTSErrorInfo("fidelity_mismatch");
+    });
+    store = createStore({ textToSpeech: { ...createTestModel(), call } });
+    await store.startPlayer({
+      text: "Some text.",
+      filename: "f.md",
+      start: 0,
+      end: 10,
+    });
+    await mobx.when(() => !!store!.activeText?.error);
+    await new Promise((r) => setTimeout(r, 300));
+    expect(store.activeText!.error!.status).toBe("fidelity_mismatch");
+    expect(call).toHaveBeenCalledTimes(1);
+  });
+
+  test("exposes the current chunk's fidelity warning on the active text", async () => {
+    const call = vi.fn<TTSModel["call"]>(
+      async (): Promise<AudioData> => ({
+        data: new ArrayBuffer(4),
+        format: "mp3",
+        fidelityWarning: true,
+      }),
+    );
+    store = createStore({ textToSpeech: { ...createTestModel(), call } });
+    await store.startPlayer({
+      text: "Some text.",
+      filename: "f.md",
+      start: 0,
+      end: 10,
+    });
+    expect(store.activeText!.fidelityWarning).toBe(false);
+    await mobx.when(() => !!store!.activeText?.fidelityWarning, {
+      timeout: 2000,
+    });
+    expect(store.activeText!.fidelityWarning).toBe(true);
   });
 });
 

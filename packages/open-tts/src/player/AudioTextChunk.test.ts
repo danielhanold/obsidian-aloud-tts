@@ -53,3 +53,37 @@ describe("AudioTextChunk.reset", () => {
     expect(chunk.timelineEndSeconds).toBeUndefined();
   });
 });
+
+describe("AudioTextChunk.fidelityWarning", () => {
+  it("tracks the fidelity warning from loaded audio and clears it on reset", () => {
+    const chunk = new AudioTextChunk({ rawText: "hi there", start: 0, end: 8 });
+    expect(chunk.fidelityWarning).toBe(false);
+    chunk.setLoaded({
+      data: new ArrayBuffer(1),
+      format: "mp3",
+      fidelityWarning: true,
+    });
+    expect(chunk.fidelityWarning).toBe(true);
+    chunk.reset();
+    expect(chunk.fidelityWarning).toBe(false);
+  });
+
+  it("clears the warning when loading again and keeps it on eviction", () => {
+    const chunk = new AudioTextChunk({ rawText: "hi there", start: 0, end: 8 });
+    chunk.setLoaded({
+      data: new ArrayBuffer(1),
+      format: "mp3",
+      fidelityWarning: true,
+    });
+    chunk.evictAudioData();
+    expect(chunk.fidelityWarning).toBe(true);
+    chunk.setLoading();
+    expect(chunk.fidelityWarning).toBe(false);
+  });
+
+  it("does not flag audio loaded without a warning", () => {
+    const chunk = new AudioTextChunk({ rawText: "hi there", start: 0, end: 8 });
+    chunk.setLoaded({ data: new ArrayBuffer(1), format: "mp3" });
+    expect(chunk.fidelityWarning).toBe(false);
+  });
+});
