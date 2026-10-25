@@ -755,7 +755,9 @@ const loadCheckLoop = (
       }
     });
   };
-  return CancellablePromise.cancelFn(inner(), () => {
+  // A failed load is already recorded on its chunk, so the loop just stops.
+  const loop = inner().catch((): void => undefined);
+  return CancellablePromise.cancelFn(loop, () => {
     cancelled = true;
   });
 };

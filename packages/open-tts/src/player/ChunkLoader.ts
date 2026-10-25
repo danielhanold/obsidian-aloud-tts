@@ -144,10 +144,14 @@ export class ChunkLoader {
     const itemOptions: TTSModelOptions = item.options;
 
     this.backgroundActiveCount += 1; // Increment active *requests* count by 1
-    this.load(item.text, itemOptions, item.context).finally(() => {
-      this.backgroundActiveCount -= 1;
-      this.processBackgroundQueue(); // Check for more work
-    });
+    this.load(item.text, itemOptions, item.context)
+      .catch(() => {
+        // Failures surface when the chunk is loaded for playback.
+      })
+      .finally(() => {
+        this.backgroundActiveCount -= 1;
+        this.processBackgroundQueue(); // Check for more work
+      });
 
     return true; // Keep processor running if queue might still have items or requests are active
   }

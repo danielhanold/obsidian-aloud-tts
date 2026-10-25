@@ -19,6 +19,8 @@ export interface ActiveAudioText {
   isPlaying: boolean;
   isLoading: boolean;
   error: TTSErrorInfo | undefined;
+  /** Whether the current chunk's audio may not match its text */
+  fidelityWarning: boolean;
   position: number;
   lastPositionChange: number;
   currentChunk: AudioTextChunk | null;
@@ -60,6 +62,10 @@ export class ActiveAudioTextImpl implements ActiveAudioText {
     return !!this.currentChunk?.loading;
   }
 
+  get fidelityWarning(): boolean {
+    return !!this.currentChunk?.fidelityWarning;
+  }
+
   get error(): TTSErrorInfo | undefined {
     const isFailed = this.currentChunk?.failed;
     if (!isFailed) {
@@ -92,6 +98,7 @@ export class ActiveAudioTextImpl implements ActiveAudioText {
       isLoading: computed,
       position: observable,
       error: computed,
+      fidelityWarning: computed,
       queue: observable,
       destroy: action,
       goToNext: action,

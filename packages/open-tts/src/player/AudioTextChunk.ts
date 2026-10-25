@@ -47,6 +47,8 @@ export class AudioTextChunk {
   failed?: boolean;
   /** The error that occurred if the chunk failed to load */
   failureInfo?: TTSErrorInfo;
+  /** Whether the loaded audio may not match the chunk's text */
+  fidelityWarning: boolean;
   /** Decoded audio used for timing and visualization. */
   decodedAudio?: DecodedAudioData;
   /** The timeline epoch this chunk timing belongs to */
@@ -66,6 +68,7 @@ export class AudioTextChunk {
     this.loading = false;
     this.failed = undefined;
     this.failureInfo = undefined;
+    this.fidelityWarning = false;
     this.decodedAudio = undefined;
     this.timelineEpoch = undefined;
     this.timelineStartSeconds = undefined;
@@ -83,6 +86,7 @@ export class AudioTextChunk {
       loading: observable,
       failed: observable,
       failureInfo: observable.ref,
+      fidelityWarning: observable,
       decodedAudio: observable.ref,
       reset: action,
       updateText: action,
@@ -102,6 +106,7 @@ export class AudioTextChunk {
     this.loading = false;
     this.failed = undefined;
     this.failureInfo = undefined;
+    this.fidelityWarning = false;
     this.invalidateTimeline();
   }
 
@@ -125,9 +130,11 @@ export class AudioTextChunk {
     this.loading = true;
     this.failed = undefined;
     this.failureInfo = undefined;
+    this.fidelityWarning = false;
   }
   setLoaded(audio: AudioData) {
     this.audio = audio;
+    this.fidelityWarning = !!audio.fidelityWarning;
     this.loading = false;
   }
   setDecodedAudioData(
