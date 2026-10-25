@@ -10,7 +10,8 @@ vi.mock("./components/TTSPluginSettingsTab", () => ({
   TTSSettingTab: vi.fn(),
 }));
 
-vi.mock("open-tts", () => ({
+vi.mock("open-tts", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("open-tts")>()),
   loadAudioStore: vi.fn(() => ({})),
   createAudioSystem: vi.fn(() => ({
     audioStore: {},
