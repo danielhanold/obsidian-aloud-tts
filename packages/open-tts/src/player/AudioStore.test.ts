@@ -847,6 +847,31 @@ describe("exportAudio", () => {
     expect(result.flaggedPassages).toBe(2);
   });
 
+  test("splits a realtime-model export into smaller chunks", async () => {
+    const sentence = "b".repeat(590) + ". ";
+    const text = sentence.repeat(6);
+    const exportChunkLengths = async (model: string): Promise<number[]> => {
+      const call = vi.fn<TTSModel["call"]>(async () => pcmAudio());
+      store = createStore({
+        audioSink: monoSink(),
+        textToSpeech: {
+          ...createTestModel(),
+          call,
+          convertToOptions: () => ({ model }),
+        },
+      });
+      await store.exportAudio(text);
+      store.destroy();
+      return call.mock.calls.map(([chunk]) => chunk.length);
+    };
+
+    const realtime = await exportChunkLengths("gpt-realtime-2.1-mini");
+    expect(realtime.length).toBeGreaterThan(1);
+    expect(Math.max(...realtime)).toBeLessThanOrEqual(1000);
+
+    expect(await exportChunkLengths("gpt-4o-mini-tts")).toHaveLength(1);
+  });
+
   test("rejects the export on a fidelity mismatch", async () => {
     const call = vi.fn<TTSModel["call"]>(async () => {
       throw new TTSErrorInfo("fidelity_mismatch");
