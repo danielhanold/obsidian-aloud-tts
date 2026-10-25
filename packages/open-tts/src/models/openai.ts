@@ -1,6 +1,10 @@
 import type { TTSPluginSettings } from "../player/TTSPluginSettings";
 import type { AudioData, MediaFormat } from "./tts-model";
 import {
+  OPENAI_REALTIME_MODEL,
+  openAIRealtimeCallTextToSpeech,
+} from "./openai-realtime";
+import {
   AudioTextContext,
   ErrorMessage,
   REQUIRE_API_KEY,
@@ -11,9 +15,27 @@ import {
 } from "./tts-model";
 
 export const OPENAI_API_URL = "https://api.openai.com";
+export const OPENAI_TTS_SHUTDOWN_DATE = "January 6, 2027";
 // OpenAI / Compatible API implementation
 export const openAITextToSpeech: TTSModel = {
-  call: openAICallTextToSpeech,
+  call: (
+    text: string,
+    options: TTSModelOptions,
+    settings: TTSPluginSettings,
+    context?: AudioTextContext,
+    signal?: AbortSignal,
+  ): Promise<AudioData> => {
+    if (isRealtimeOpenAIModel(options.model)) {
+      return openAIRealtimeCallTextToSpeech(
+        text,
+        options,
+        settings,
+        context,
+        signal,
+      );
+    }
+    return openAICallTextToSpeech(text, options, settings, context, signal);
+  },
   validateConnection: async (settings) => {
     if (!settings.openai_apiKey) {
       return REQUIRE_API_KEY;
@@ -170,6 +192,17 @@ export interface OpenAIModel {
   label: string;
   value: string;
   supportsInstructions?: boolean;
+  deprecated?: boolean;
+}
+
+export function isDeprecatedOpenAIModel(model: string): boolean {
+  return (
+    DEFAULT_OPENAI_MODELS.find((x) => x.value === model)?.deprecated || false
+  );
+}
+
+export function isRealtimeOpenAIModel(model: string): boolean {
+  return model === OPENAI_REALTIME_MODEL;
 }
 
 export function supportsInstructions(model: string): boolean {
@@ -181,10 +214,16 @@ export function supportsInstructions(model: string): boolean {
 
 export const DEFAULT_OPENAI_MODELS: OpenAIModel[] = [
   {
-    label: "gpt-4o-mini-tts",
-    value: "gpt-4o-mini-tts",
+    label: OPENAI_REALTIME_MODEL,
+    value: OPENAI_REALTIME_MODEL,
     supportsInstructions: true,
   },
-  { label: "tts-1", value: "tts-1" },
-  { label: "tts-1-hd", value: "tts-1-hd" },
+  {
+    label: "gpt-4o-mini-tts (deprecated)",
+    value: "gpt-4o-mini-tts",
+    supportsInstructions: true,
+    deprecated: true,
+  },
+  { label: "tts-1 (deprecated)", value: "tts-1", deprecated: true },
+  { label: "tts-1-hd (deprecated)", value: "tts-1-hd", deprecated: true },
 ] as const;

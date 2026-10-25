@@ -20,6 +20,22 @@ describe("pluginSettingsStore", () => {
     expect(store.settings).toEqual(DEFAULT_SETTINGS);
   });
 
+  it("defaults new installs to gpt-realtime-2.1-mini", async () => {
+    const store = await pluginSettingsStore(
+      async () => null,
+      async () => {},
+    );
+    expect(store.settings.openai_ttsModel).toBe("gpt-realtime-2.1-mini");
+  });
+
+  it("keeps an existing user's saved deprecated model", async () => {
+    const store = await pluginSettingsStore(
+      async () => ({ ...DEFAULT_SETTINGS, openai_ttsModel: "tts-1" }),
+      async () => {},
+    );
+    expect(store.settings.openai_ttsModel).toBe("tts-1");
+  });
+
   it("should migrate data (no base url) from version 0 format", async () => {
     const baseData = {
       OPENAI_API_KEY: "test-key",

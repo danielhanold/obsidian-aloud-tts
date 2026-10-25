@@ -226,7 +226,7 @@ export const DEFAULT_SETTINGS: TTSPluginSettings = {
   hume_ttsInstructions: undefined,
   // openai
   openai_apiKey: "",
-  openai_ttsModel: "gpt-4o-mini-tts",
+  openai_ttsModel: "gpt-realtime-2.1-mini",
   openai_ttsVoice: "shimmer",
   openai_ttsInstructions: undefined,
   // openaicompat
