@@ -22,7 +22,7 @@ branch_prefix:
 branch: 'feat/openai-realtime-tts-with-gpt-realtime-2-1-mini'
 pr:
 blocked_by:
-reconciled: false
+reconciled: true
 ---
 
 ## Artifacts
@@ -53,3 +53,9 @@ OpenAI deprecated tts-1, tts-1-hd, and gpt-4o-mini-tts; they shut down on Januar
 - Changing the OpenAI-compatible (openaicompat) provider.
 - A user-triggered regenerate action for flagged passages.
 - Streaming playback as audio arrives, connection reuse, and any conversational Realtime use.
+
+## Reconcile log
+
+### 2026-10-25
+
+Unchanged against `main` at 81fce14: no Realtime/WebSocket code exists yet; spec, scope, and relations hold.
