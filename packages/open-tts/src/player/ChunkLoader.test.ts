@@ -65,6 +65,27 @@ describe("ChunkLoader", () => {
     expect(saveAudio).not.toHaveBeenCalled();
   });
 
+  it("returns the same mismatch rejection on reload and preload without a new request", async () => {
+    call.mockRejectedValueOnce(new TTSErrorInfo("fidelity_mismatch"));
+    call.mockResolvedValue({ data: new ArrayBuffer(4), format: "mp3" });
+    const loader = createLoader();
+
+    await expect(loader.load("text", { model: "m" })).rejects.toMatchObject({
+      status: "fidelity_mismatch",
+    });
+    loader.preload("text", { model: "m" }, 0);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await expect(loader.load("text", { model: "m" })).rejects.toMatchObject({
+      status: "fidelity_mismatch",
+    });
+    expect(call).toHaveBeenCalledTimes(1);
+
+    await expect(loader.load("edited text", { model: "m" })).resolves.toEqual(
+      expect.objectContaining({ format: "mp3" }),
+    );
+    expect(call).toHaveBeenCalledTimes(2);
+  });
+
   it("caches flagged audio with its warning so a replay is free and still flagged", async () => {
     const flagged: AudioData = {
       data: new ArrayBuffer(4),

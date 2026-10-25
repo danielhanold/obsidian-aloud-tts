@@ -17,6 +17,8 @@ export class ChunkLoader {
   private backgroundQueue: BackgroundRequest[] = [];
   private backgroundActiveCount = 0;
   private localCache: CachedAudio[] = [];
+  /** Non-retryable failures, kept so the same request is never paid for twice. */
+  private rejected: RejectedRequest[] = [];
   private backgroundRequestProcessor: IntervalDaemon;
   private garbageCollector: IntervalDaemon;
 
@@ -62,6 +64,10 @@ export class ChunkLoader {
       return;
     }
 
+    if (this.findRejected(text, options)) {
+      return;
+    }
+
     // Check if already in local memory cache (loading or loaded)
     const loaded = this.localCache.find(
       (x) => x.text === text && mobx.comparer.structural(x.options, options),
@@ -84,6 +90,11 @@ export class ChunkLoader {
     options: TTSModelOptions,
     context: AudioTextContext = {},
   ): Promise<AudioData> {
+    const rejected = this.findRejected(text, options);
+    if (rejected) {
+      return Promise.reject(rejected.error);
+    }
+
     const existing = this.localCache.find(
       (x) => x.text === text && mobx.comparer.structural(x.options, options), // Use structural comparison
     );
@@ -103,6 +114,7 @@ export class ChunkLoader {
     this.garbageCollector.stop();
     // Clear caches and queue on destroy
     this.localCache = [];
+    this.rejected = [];
     this.backgroundQueue = [];
     this.backgroundActiveCount = 0;
   }
@@ -118,10 +130,22 @@ export class ChunkLoader {
       requestedTime: Date.now(),
       result: this.tryLoadTrack(text, options, 0, 3, context).catch((e) => {
         this.destroyCachedAudio(audio);
+        if (e instanceof TTSErrorInfo && !e.isRetryable) {
+          this.rejected.push({ text, options, error: e });
+        }
         throw e;
       }),
     };
     return audio;
+  }
+
+  private findRejected(
+    text: string,
+    options: TTSModelOptions,
+  ): RejectedRequest | undefined {
+    return this.rejected.find(
+      (x) => x.text === text && mobx.comparer.structural(x.options, options),
+    );
   }
 
   private destroyCachedAudio(audio: CachedAudio): void {
@@ -301,4 +325,10 @@ interface CachedAudio {
   readonly result: Promise<AudioData>;
   /** the time the request was made. Milliseconds since Unix Epoch. May be updated to prevent deletion */
   requestedTime: number;
+}
+
+interface RejectedRequest {
+  readonly text: string;
+  readonly options: TTSModelOptions;
+  readonly error: TTSErrorInfo;
 }
