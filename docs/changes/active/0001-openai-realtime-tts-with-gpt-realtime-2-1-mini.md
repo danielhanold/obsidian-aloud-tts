@@ -2,7 +2,7 @@
 id: 1
 slug: 'openai-realtime-tts-with-gpt-realtime-2-1-mini'
 title: 'OpenAI Realtime TTS with gpt-realtime-2.1-mini'
-status: 'proposed'
+status: 'in-progress'
 priority: 'high'
 type: 'feat'
 deliverable: 'pr'
@@ -19,7 +19,7 @@ results:
 auto_groomable:
 hold:
 branch_prefix:
-branch:
+branch: 'feat/openai-realtime-tts-with-gpt-realtime-2-1-mini'
 pr:
 blocked_by:
 reconciled: false
