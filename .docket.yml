@@ -1,0 +1,7 @@
+agent_harnesses: [claude, opencode]
+build:
+  gate: local
+  test_command: pnpm test
+finalize:
+  gate: local
+  test_command: pnpm test
