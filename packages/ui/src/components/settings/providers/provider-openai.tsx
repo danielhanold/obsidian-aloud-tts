@@ -3,7 +3,12 @@ import React from "react";
 import { TTSPluginSettingsStore } from "open-tts";
 import { ApiKeyComponent } from "../api-key-component";
 import { OptionSelectSetting, TextareaSetting } from "../setting-components";
-import { DEFAULT_OPENAI_MODELS } from "open-tts";
+import {
+  DEFAULT_OPENAI_MODELS,
+  OPENAI_REALTIME_MODEL,
+  OPENAI_TTS_SHUTDOWN_DATE,
+  isDeprecatedOpenAIModel,
+} from "open-tts";
 
 export const OpenAISettings = observer(
   ({ store }: { store: TTSPluginSettingsStore }) => {
@@ -29,14 +34,24 @@ const OpenAIModelComponent: React.FC<{
   store: TTSPluginSettingsStore;
 }> = observer(({ store }) => {
   return (
-    <OptionSelectSetting
-      name="Model"
-      description="The OpenAI TTS model to use."
-      store={store}
-      provider="openai"
-      fieldName="openai_ttsModel"
-      options={DEFAULT_OPENAI_MODELS}
-    />
+    <>
+      <OptionSelectSetting
+        name="Model"
+        description="The OpenAI TTS model to use."
+        store={store}
+        provider="openai"
+        fieldName="openai_ttsModel"
+        options={DEFAULT_OPENAI_MODELS}
+      />
+      {isDeprecatedOpenAIModel(store.settings.openai_ttsModel) && (
+        <p
+          className="setting-item-description tts-model-deprecation-note"
+          role="note"
+        >
+          {`This model is deprecated and will stop working on ${OPENAI_TTS_SHUTDOWN_DATE}. Switch to ${OPENAI_REALTIME_MODEL}.`}
+        </p>
+      )}
+    </>
   );
 });
 
@@ -49,27 +64,27 @@ const DEFAULT_OPENAI_VOICES: Voice[] = [
   {
     label: "Alloy",
     value: "alloy",
-    models: ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
   },
   {
     label: "Ash",
     value: "ash",
-    models: ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
   },
   {
     label: "Ballad",
     value: "ballad",
-    models: ["gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "gpt-4o-mini-tts"],
   },
   {
     label: "Coral",
     value: "coral",
-    models: ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
   },
   {
     label: "Echo",
     value: "echo",
-    models: ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
   },
   {
     label: "Fable",
@@ -89,17 +104,27 @@ const DEFAULT_OPENAI_VOICES: Voice[] = [
   {
     label: "Sage",
     value: "sage",
-    models: ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
   },
   {
     label: "Shimmer",
     value: "shimmer",
-    models: ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "tts-1", "tts-1-hd", "gpt-4o-mini-tts"],
   },
   {
     label: "Verse",
     value: "verse",
-    models: ["gpt-4o-mini-tts"],
+    models: [OPENAI_REALTIME_MODEL, "gpt-4o-mini-tts"],
+  },
+  {
+    label: "Marin",
+    value: "marin",
+    models: [OPENAI_REALTIME_MODEL],
+  },
+  {
+    label: "Cedar",
+    value: "cedar",
+    models: [OPENAI_REALTIME_MODEL],
   },
 ] as const;
 
@@ -130,7 +155,7 @@ const OpenAIVoiceComponent: React.FC<{
       store={store}
       provider="openai"
       fieldName="openai_ttsVoice"
-      options={DEFAULT_OPENAI_VOICES}
+      options={voices}
     />
   );
 });
