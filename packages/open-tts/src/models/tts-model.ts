@@ -11,6 +11,8 @@ export interface AudioData {
   format: MediaFormat;
   /** PCM metadata - required when format is "pcm" */
   pcmMetadata?: PcmMetadata;
+  /** Set when the spoken audio may not match the source text */
+  fidelityWarning?: boolean;
 }
 
 export interface PcmMetadata {
@@ -69,6 +71,12 @@ export interface TTSModelOptions {
   generationSpeed?: number;
 }
 
+/** Error statuses that must never be retried, regardless of http code. */
+export const NON_RETRYABLE_TTS_STATUSES: ReadonlySet<string> = new Set([
+  "fidelity_mismatch",
+  "realtime_incomplete",
+]);
+
 export class TTSErrorInfo extends Error {
   status: string;
   httpErrorCode?: number;
@@ -88,6 +96,9 @@ export class TTSErrorInfo extends Error {
   }
 
   get isRetryable(): boolean {
+    if (NON_RETRYABLE_TTS_STATUSES.has(this.status)) {
+      return false;
+    }
     if (this.httpErrorCode === undefined) {
       return true;
     }
