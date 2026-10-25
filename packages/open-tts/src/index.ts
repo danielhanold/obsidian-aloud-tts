@@ -8,6 +8,7 @@ export * from "./models/inworld";
 export * from "./models/minimax";
 export * from "./models/openai";
 export * from "./models/openai-like";
+export * from "./models/openai-realtime";
 export * from "./models/polly";
 export * from "./models/registry";
 export * from "./models/tts-model";
