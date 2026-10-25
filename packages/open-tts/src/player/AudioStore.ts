@@ -12,6 +12,17 @@ import {
   concatenateMp3Buffers,
   convertToPlayableFormat,
 } from "../util/audioProcessing";
+import { isRealtimeOpenAIModel } from "../models/openai";
+
+/** Speech endpoints accept roughly 4096 characters per request. */
+const SPEECH_EXPORT_CHUNK_SIZE = 4000;
+/**
+ * The realtime model is conversational: each response is capped by
+ * max_output_tokens (4096 at most when set, "inf" by default), so long passages
+ * risk an incomplete response, which fails the whole export, and drift further
+ * from the source text. Short chunks keep each response well under the cap.
+ */
+const REALTIME_EXPORT_CHUNK_SIZE = 1000;
 
 /** Progress of an in-flight export, reported per text chunk. */
 export interface ExportProgress {
@@ -127,8 +138,9 @@ class AudioStoreImpl implements AudioStore {
   async exportAudio(text: string): Promise<ExportResult> {
     const options = this.system.ttsModel.convertToOptions(this.system.settings);
 
-    // Get model's practical character limit (most models have 4000-4096 limit)
-    const maxChunkSize = 4000; // Conservative limit to avoid hitting model limits
+    const maxChunkSize = isRealtimeOpenAIModel(options.model)
+      ? REALTIME_EXPORT_CHUNK_SIZE
+      : SPEECH_EXPORT_CHUNK_SIZE;
 
     const controller = new AbortController();
     this.exportAbortController = controller;
