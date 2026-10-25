@@ -11,6 +11,7 @@
   --accent-primary: #007acc;
   --accent-hover: #1177bb;
   --error-bg: rgba(244, 63, 94, 0.1);
+  --warning-bg: rgba(245, 158, 11, 0.15);
   --error-color: #f87171;
   --success-color: #34d399;
 }
@@ -197,6 +198,17 @@ dialog::backdrop {
 
 .tts-audio-status-error-text:hover {
   text-decoration: underline;
+}
+
+.tts-audio-status-warning-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: var(--warning-bg);
+  font-style: italic;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
 /* =================================================================

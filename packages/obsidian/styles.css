@@ -116,6 +116,25 @@
   border-radius: var(--radius-s);
 }
 
+.tts-audio-status-warning {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.tts-audio-status-warning-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: rgba(var(--color-orange-rgb), 0.35);
+  font-style: italic;
+  font-size: var(--font-ui-small);
+  padding: 0.15rem;
+  border-radius: var(--radius-s);
+}
+
 .tts-audio-status-loading {
   display: flex;
   justify-content: center;
@@ -234,6 +253,13 @@
   white-space: nowrap;
 }
 .tts-audio-status-error-icon {
+  display: inline-flex;
+  padding-right: 0.33rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.tts-audio-status-warning-icon {
   display: inline-flex;
   padding-right: 0.33rem;
   justify-content: center;
