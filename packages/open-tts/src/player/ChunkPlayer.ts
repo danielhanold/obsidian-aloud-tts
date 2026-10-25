@@ -756,7 +756,9 @@ const loadCheckLoop = (
     });
   };
   // A failed load is already recorded on its chunk, so the loop just stops.
-  const loop = inner().catch((): void => undefined);
+  const loop = inner().catch((e: unknown): void => {
+    console.warn("load check loop stopped", e);
+  });
   return CancellablePromise.cancelFn(loop, () => {
     cancelled = true;
   });

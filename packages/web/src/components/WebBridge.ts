@@ -1,5 +1,5 @@
 import { EditorView } from "@codemirror/view";
-import { AudioStore } from "open-tts";
+import { AudioStore, formatFlaggedPassagesSuffix } from "open-tts";
 import { TTSEditorBridge } from "@open-tts/ui";
 
 export interface WebObsidianBridge extends TTSEditorBridge {
@@ -98,9 +98,12 @@ export class WebBridgeImpl implements WebObsidianBridge {
       return;
     }
     try {
-      const { data } = await this.store.exportAudio(text);
+      const { data, flaggedPassages } = await this.store.exportAudio(text);
       const hash = this.hashString(text).toString(16).slice(0, 8);
       this.downloadBlob(data, `aloud-document-${hash}.mp3`);
+      if (flaggedPassages > 0) {
+        alert(`Saved audio${formatFlaggedPassagesSuffix(flaggedPassages)}`);
+      }
     } catch (ex) {
       if (ex instanceof DOMException && ex.name === "AbortError") {
         return;
@@ -130,7 +133,7 @@ export class WebBridgeImpl implements WebObsidianBridge {
 
     try {
       // Generate audio using the audio store
-      const { data } = await this.store.exportAudio(text);
+      const { data, flaggedPassages } = await this.store.exportAudio(text);
 
       // Create a blob and download it
       const blob = new Blob([data], { type: "audio/mpeg" });
@@ -154,7 +157,9 @@ export class WebBridgeImpl implements WebObsidianBridge {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      alert(`Exported ${filename}`);
+      alert(
+        `Exported ${filename}${formatFlaggedPassagesSuffix(flaggedPassages)}`,
+      );
     } catch (ex) {
       console.error("Couldn't export audio!", ex);
       alert("Failed to export audio");
