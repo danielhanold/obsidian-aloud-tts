@@ -8,6 +8,7 @@ interface AudioCacheDB extends DBSchema {
       hash: string;
       blob: Blob;
       format: MediaFormat;
+      fidelityWarning?: boolean;
     };
     key: string;
   };
@@ -92,9 +93,17 @@ export class IndexedDBAudioStorage implements AudioCache {
         } as const);
       await this.db.put("audioMetadata", { ...metadata, lastread: now });
     }
-    return got && buff
-      ? { data: buff, format: got.format ?? ("mp3" as MediaFormat) }
-      : null;
+    if (!got || !buff) {
+      return null;
+    }
+    const audio: AudioData = {
+      data: buff,
+      format: got.format ?? ("mp3" as MediaFormat),
+    };
+    if (got.fidelityWarning) {
+      audio.fidelityWarning = true;
+    }
+    return audio;
   }
   async saveAudio(
     text: string,
@@ -107,6 +116,7 @@ export class IndexedDBAudioStorage implements AudioCache {
       hash,
       blob: new Blob([audio.data]),
       format: audio.format,
+      ...(audio.fidelityWarning ? { fidelityWarning: true } : {}),
     });
     await this.db.put("audioMetadata", {
       hash,

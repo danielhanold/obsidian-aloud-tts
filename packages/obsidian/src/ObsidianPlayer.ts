@@ -55,7 +55,8 @@ export function configurableAudioCache(
 export function obsidianFileVault(app: App): AudioCache {
   const vault = app.vault;
   const cachedir = ".tts";
-  // Default format reserved for future use when upgrading existing entries
+  const fidelitySidecarPath = (audioPath: string): string =>
+    normalizePath(`${audioPath}.fidelity`);
 
   return {
     async getAudio(
@@ -70,7 +71,11 @@ export function obsidianFileVault(app: App): AudioCache {
         return null;
       } else {
         const data = await vault.adapter.readBinary(filepath);
-        return { data, format };
+        const audio: AudioData = { data, format };
+        if (await vault.adapter.exists(fidelitySidecarPath(filepath))) {
+          audio.fidelityWarning = true;
+        }
+        return audio;
       }
     },
     async saveAudio(
@@ -86,6 +91,12 @@ export function obsidianFileVault(app: App): AudioCache {
         await vault.adapter.mkdir(normalizePath(`/${cachedir}`));
       }
       await vault.adapter.writeBinary(filepath, audio.data);
+      const sidecar = fidelitySidecarPath(filepath);
+      if (audio.fidelityWarning) {
+        await vault.adapter.write(sidecar, "fidelity-warning");
+      } else if (await vault.adapter.exists(sidecar)) {
+        await vault.adapter.remove(sidecar);
+      }
     },
     async expire(ageInMillis = 1000 * 60 * 60 * 8): Promise<void> {
       const exists = await vault.adapter.exists(normalizePath(`/${cachedir}`));
