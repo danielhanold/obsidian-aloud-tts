@@ -190,6 +190,7 @@ export class SettingsModal {
 
 export interface OpenAIConfig {
   apiKey: string;
+  model?: string;
 }
 
 export interface OpenAICompatConfig {
@@ -209,6 +210,9 @@ export async function configureOpenAI(
 ): Promise<void> {
   await settings.selectProvider("openai");
   await settings.fillTextSetting("OpenAI API key", config.apiKey);
+  if (config.model) {
+    await settings.selectDropdownSetting(/^Model/, config.model);
+  }
 }
 
 /**

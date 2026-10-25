@@ -31,8 +31,12 @@ Each TTS provider has its own specific settings. You only need to configure the 
 ### OpenAI
 
 -   **API Key**: Your API key from [OpenAI](https://platform.openai.com/api-keys).
--   **Model**: The TTS model to use (e.g., `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`).
--   **Voice**: The voice to use for playback.
+-   **Model**: The TTS model to use:
+    -   `gpt-realtime-2.1-mini` (default): Speaks through the OpenAI Realtime API.
+    -   `gpt-4o-mini-tts`, `tts-1`, and `tts-1-hd` (deprecated): These models still work, but they stop working on January 6, 2027. Existing selections are kept until you change them.
+-   **Voice**: The voice to use for playback. `marin` and `cedar` are only available with `gpt-realtime-2.1-mini`. `fable`, `nova`, and `onyx` are not available with `gpt-realtime-2.1-mini`.
+
+**Notes**: `gpt-realtime-2.1-mini` can occasionally drift from the text it is given. When the spoken audio does not closely match a passage, the player shows an amber warning: "This passage may not have been read exactly as written." Flagged audio is cached like any other audio, so it stays until the text changes or the cache is cleared. When you export a document, the result notes how many passages may differ from the text.
 
 ### Google Gemini
 

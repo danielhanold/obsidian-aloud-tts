@@ -16,7 +16,7 @@ test("web UI can configure OpenAI and play a 2 sentence sample to completion", a
 
   // Configure OpenAI
   await ctx.settings.open();
-  await configureOpenAI(ctx.settings, { apiKey });
+  await configureOpenAI(ctx.settings, { apiKey, model: "tts-1" });
   await ctx.settings.close();
 
   // Enter sample text with two distinct sentences
@@ -60,6 +60,49 @@ test("web UI can configure OpenAI and play a 2 sentence sample to completion", a
   await ctx.player.expectNoHighlighting();
 });
 
+test("web UI reads a sentence with gpt-realtime-2.1-mini over the Realtime API", async ({
+  page,
+}) => {
+  const apiKey = getOpenAIApiKey();
+  const ctx = new TestContext(page);
+  let responseDone = false;
+
+  page.on("websocket", (ws) => {
+    ws.on("framereceived", ({ payload }) => {
+      if (typeof payload !== "string") {
+        return;
+      }
+      try {
+        const event = JSON.parse(payload) as { type?: string };
+        if (event.type === "response.done") {
+          responseDone = true;
+        }
+      } catch {
+        // ignore non-JSON frames
+      }
+    });
+  });
+
+  await ctx.reset();
+
+  // Configure OpenAI with the default model
+  await ctx.settings.open();
+  await configureOpenAI(ctx.settings, { apiKey });
+  await ctx.settings.close();
+
+  const sentence = "The realtime model reads this sentence aloud.";
+  await ctx.editor.setText(sentence);
+  await ctx.editor.expectToContain(sentence);
+  await ctx.editor.moveCursorToStart();
+
+  await ctx.player.play();
+  await ctx.player.expectToolbarVisible();
+
+  await expect.poll(() => responseDone, { timeout: 30_000 }).toBe(true);
+  await expect(page.locator(".tts-audio-status-error")).not.toBeVisible();
+  await ctx.player.expectPlayingNowToContain("realtime model", 30_000);
+});
+
 test("OpenAI Compatible provider with WAV format sends correct request and plays audio", async ({
   page,
 }) => {
@@ -79,7 +122,8 @@ test("OpenAI Compatible provider with WAV format sends correct request and plays
   await ctx.settings.close();
 
   // Enter sample text
-  const sampleText = "Testing WAV audio format with OpenAI Compatible provider.";
+  const sampleText =
+    "Testing WAV audio format with OpenAI Compatible provider.";
   await ctx.editor.setText(sampleText);
   await ctx.editor.expectToContain("Testing WAV");
   await ctx.editor.moveCursorToStart();
