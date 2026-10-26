@@ -22,7 +22,7 @@ branch_prefix:
 branch: 'chore/release-workflow-uses-built-in-github-token'
 pr:
 blocked_by:
-reconciled: false
+reconciled: true
 ---
 
 ## Artifacts
@@ -44,3 +44,9 @@ release.yml grants the build job `permissions: contents: write` and sets the rel
 ## Out of scope
 
 Changing when the release runs, the build, lint or test steps, the version-bump workflow, or the release asset list. Removing a GH_RELEASE_TOKEN secret if one is ever configured.
+
+## Reconcile log
+
+### 2026-10-26
+
+Unchanged against main 6803803: release.yml still uses secrets.GH_RELEASE_TOKEN and has no permissions block.
