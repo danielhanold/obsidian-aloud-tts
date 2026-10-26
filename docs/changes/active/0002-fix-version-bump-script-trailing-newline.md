@@ -13,7 +13,7 @@ stacked_on:
 related: []
 discovered_from: [1]
 adrs: []
-spec:
+spec: 'docs/superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md'
 plan:
 results:
 auto_groomable:
@@ -28,6 +28,9 @@ reconciled: false
 ## Artifacts
 
 <!-- docket:artifacts:start (generated — do not hand-edit) -->
+| Artifact | Link |
+|---|---|
+| Spec | [2026-10-26-fix-version-bump-script-trailing-newline-design.md](../../superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) |
 <!-- docket:artifacts:end -->
 
 ## Why

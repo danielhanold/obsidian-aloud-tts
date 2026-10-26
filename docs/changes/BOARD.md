@@ -1,12 +1,12 @@
 # Backlog
 
-**2 changes** — 🟡 1 proposed · ✅ 1 done
+**2 changes** — 🟣 1 groomed · ✅ 1 done
 
-## 🟡 Proposed (1)
+## 🟣 Groomed (1)
 
-| # | Title | Priority | Type | Readiness |
-|---|-------|----------|------|-----------|
-| [0002](active/0002-fix-version-bump-script-trailing-newline.md) | Fix version-bump script trailing newline | `high` | `fix` | needs-grooming |
+| # | Title | Priority | Type | Spec | Readiness |
+|---|-------|----------|------|------|-----------|
+| [0002](active/0002-fix-version-bump-script-trailing-newline.md) | Fix version-bump script trailing newline | `high` | `fix` | [spec](../superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) | build-ready |
 
 ```mermaid
 graph TD
