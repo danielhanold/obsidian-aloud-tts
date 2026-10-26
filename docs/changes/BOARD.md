@@ -1,12 +1,12 @@
 # Backlog
 
-**3 changes** — 🟡 1 proposed · ✅ 2 done
+**3 changes** — 🟣 1 groomed · ✅ 2 done
 
-## 🟡 Proposed (1)
+## 🟣 Groomed (1)
 
-| # | Title | Priority | Type | Readiness |
-|---|-------|----------|------|-----------|
-| [0003](active/0003-release-workflow-uses-built-in-github-token.md) | Release workflow uses built-in GitHub token | `high` | `chore` | needs-grooming |
+| # | Title | Priority | Type | Spec | Readiness |
+|---|-------|----------|------|------|-----------|
+| [0003](active/0003-release-workflow-uses-built-in-github-token.md) | Release workflow uses built-in GitHub token | `high` | `chore` | [spec](../superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md) | build-ready |
 
 ```mermaid
 graph TD

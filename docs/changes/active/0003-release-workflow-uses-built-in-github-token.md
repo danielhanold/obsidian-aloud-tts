@@ -13,7 +13,7 @@ stacked_on:
 related: []
 discovered_from: [2]
 adrs: []
-spec:
+spec: 'docs/superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md'
 plan:
 results:
 auto_groomable:
@@ -28,6 +28,9 @@ reconciled: false
 ## Artifacts
 
 <!-- docket:artifacts:start (generated — do not hand-edit) -->
+| Artifact | Link |
+|---|---|
+| Spec | [2026-10-26-release-workflow-uses-built-in-github-token-design.md](../../superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md) |
 <!-- docket:artifacts:end -->
 
 ## Why
