@@ -14,7 +14,7 @@ related: []
 discovered_from: [2]
 adrs: []
 spec: 'docs/superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md'
-plan:
+plan: 'docs/superpowers/plans/2026-10-25-release-workflow-uses-built-in-github-token.md'
 results:
 auto_groomable:
 hold:
@@ -31,6 +31,7 @@ reconciled: true
 | Artifact | Link |
 |---|---|
 | Spec | [2026-10-26-release-workflow-uses-built-in-github-token-design.md](../../superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md) |
+| Plan | [2026-10-25-release-workflow-uses-built-in-github-token.md](../../superpowers/plans/2026-10-25-release-workflow-uses-built-in-github-token.md) |
 <!-- docket:artifacts:end -->
 
 ## Why
