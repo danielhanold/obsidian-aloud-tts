@@ -15,7 +15,7 @@ discovered_from: [1]
 adrs: []
 spec: 'docs/superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md'
 plan: 'docs/superpowers/plans/2026-10-25-fix-version-bump-script-trailing-newline.md'
-results:
+results: 'docs/results/2026-10-25-fix-version-bump-script-trailing-newline-results.md'
 auto_groomable:
 hold:
 branch_prefix:
@@ -32,6 +32,7 @@ reconciled: true
 |---|---|
 | Spec | [2026-10-26-fix-version-bump-script-trailing-newline-design.md](../../superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) |
 | Plan | [2026-10-25-fix-version-bump-script-trailing-newline.md](../../superpowers/plans/2026-10-25-fix-version-bump-script-trailing-newline.md) |
+| Results | [2026-10-25-fix-version-bump-script-trailing-newline-results.md](../../results/2026-10-25-fix-version-bump-script-trailing-newline-results.md) |
 <!-- docket:artifacts:end -->
 
 ## Why
