@@ -1,5 +1,5 @@
 <!-- docket:backlink:start (generated — do not hand-edit) -->
-> ↩ **[Change 0002 — Fix version-bump script trailing newline](../changes/active/0002-fix-version-bump-script-trailing-newline.md)**
+> ↩ **[Change 0002 — Fix version-bump script trailing newline](../changes/archive/2026-10-26-0002-fix-version-bump-script-trailing-newline.md)**
 <!-- docket:backlink:end -->
 
 # Fix Version-Bump Script Trailing Newline — Results

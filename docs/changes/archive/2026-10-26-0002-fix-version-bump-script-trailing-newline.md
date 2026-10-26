@@ -2,7 +2,7 @@
 id: 2
 slug: 'fix-version-bump-script-trailing-newline'
 title: 'Fix version-bump script trailing newline'
-status: 'implemented'
+status: 'done'
 priority: 'high'
 type: 'fix'
 deliverable: 'pr'
@@ -31,6 +31,7 @@ reconciled: true
 | Artifact | Link |
 |---|---|
 | Spec | [2026-10-26-fix-version-bump-script-trailing-newline-design.md](../../superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) |
+| Spec (merged) | [2026-10-26-fix-version-bump-script-trailing-newline-design.md](https://github.com/danielhanold/obsidian-aloud-tts/blob/main/docs/superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) |
 | Plan | [2026-10-25-fix-version-bump-script-trailing-newline.md](../../superpowers/plans/2026-10-25-fix-version-bump-script-trailing-newline.md) |
 | Results | [2026-10-25-fix-version-bump-script-trailing-newline-results.md](../../results/2026-10-25-fix-version-bump-script-trailing-newline-results.md) |
 <!-- docket:artifacts:end -->
