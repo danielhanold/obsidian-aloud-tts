@@ -22,7 +22,7 @@ branch_prefix:
 branch: 'fix/fix-version-bump-script-trailing-newline'
 pr:
 blocked_by:
-reconciled: false
+reconciled: true
 ---
 
 ## Artifacts
@@ -44,3 +44,9 @@ version-bump.mjs appends a trailing newline to every JSON file it writes (the fo
 ## Out of scope
 
 Reworking the bump or release workflows, changing the tagging scheme, or deleting the 0.15.2-rc1 tag (left as a record of the failed run unless the maintainer chooses to remove it).
+
+## Reconcile log
+
+### 2026-10-26
+
+Unchanged against main 06bd09b: version-bump.mjs still writes JSON without a trailing newline and the four packages/*/package.json files lack one.
