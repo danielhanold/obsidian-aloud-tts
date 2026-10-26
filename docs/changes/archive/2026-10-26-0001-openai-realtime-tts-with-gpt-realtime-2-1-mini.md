@@ -2,12 +2,12 @@
 id: 1
 slug: 'openai-realtime-tts-with-gpt-realtime-2-1-mini'
 title: 'OpenAI Realtime TTS with gpt-realtime-2.1-mini'
-status: 'implemented'
+status: 'done'
 priority: 'high'
 type: 'feat'
 deliverable: 'pr'
 created: '2026-10-25'
-updated: '2026-10-25'
+updated: '2026-10-26'
 depends_on: []
 stacked_on:
 related: []
@@ -31,6 +31,7 @@ reconciled: true
 | Artifact | Link |
 |---|---|
 | Spec | [2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md](../../superpowers/specs/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md) |
+| Spec (merged) | [2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md](https://github.com/danielhanold/obsidian-aloud-tts/blob/main/docs/superpowers/specs/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-design.md) |
 | Plan | [2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini.md](../../superpowers/plans/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini.md) |
 | Results | [2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-results.md](../../results/2026-10-25-openai-realtime-tts-with-gpt-realtime-2-1-mini-results.md) |
 <!-- docket:artifacts:end -->

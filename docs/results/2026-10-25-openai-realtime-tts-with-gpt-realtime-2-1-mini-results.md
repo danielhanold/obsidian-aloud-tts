@@ -1,5 +1,5 @@
 <!-- docket:backlink:start (generated — do not hand-edit) -->
-> ↩ **[Change 0001 — OpenAI Realtime TTS with gpt-realtime-2.1-mini](../changes/active/0001-openai-realtime-tts-with-gpt-realtime-2-1-mini.md)**
+> ↩ **[Change 0001 — OpenAI Realtime TTS with gpt-realtime-2.1-mini](../changes/archive/2026-10-26-0001-openai-realtime-tts-with-gpt-realtime-2-1-mini.md)**
 <!-- docket:backlink:end -->
 
 # OpenAI Realtime TTS with gpt-realtime-2.1-mini — Results
