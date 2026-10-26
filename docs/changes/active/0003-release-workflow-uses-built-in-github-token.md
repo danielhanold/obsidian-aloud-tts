@@ -2,7 +2,7 @@
 id: 3
 slug: 'release-workflow-uses-built-in-github-token'
 title: 'Release workflow uses built-in GitHub token'
-status: 'proposed'
+status: 'in-progress'
 priority: 'high'
 type: 'chore'
 deliverable: 'pr'
@@ -19,7 +19,7 @@ results:
 auto_groomable:
 hold:
 branch_prefix:
-branch:
+branch: 'chore/release-workflow-uses-built-in-github-token'
 pr:
 blocked_by:
 reconciled: false
