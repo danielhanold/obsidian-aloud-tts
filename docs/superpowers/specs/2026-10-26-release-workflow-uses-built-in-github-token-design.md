@@ -1,4 +1,4 @@
-# Release workflow uses built-in GitHub token
+# Release Workflow Uses Built-In GitHub Token
 
 Change 0003 — Release workflow uses built-in GitHub token
 
@@ -12,7 +12,7 @@ Change 0003 — Release workflow uses built-in GitHub token
 2. In the "Create release" step, set `GITHUB_TOKEN: ${{ github.token }}` in place of the `GH_RELEASE_TOKEN` secret reference.
 3. Leave everything else in the workflow as it is, including the `pull_request` trigger. The release step is already gated on a tag ref or `workflow_dispatch`, so pull requests only run the build.
 
-## Known limitation
+## Known Limitation
 
 Releases created with the built-in token do not trigger other workflows. No workflow in this repository listens for `release` events, so this has no effect today.
 
