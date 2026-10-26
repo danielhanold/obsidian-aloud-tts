@@ -2,7 +2,7 @@
 id: 2
 slug: 'fix-version-bump-script-trailing-newline'
 title: 'Fix version-bump script trailing newline'
-status: 'proposed'
+status: 'in-progress'
 priority: 'high'
 type: 'fix'
 deliverable: 'pr'
@@ -19,7 +19,7 @@ results:
 auto_groomable:
 hold:
 branch_prefix:
-branch:
+branch: 'fix/fix-version-bump-script-trailing-newline'
 pr:
 blocked_by:
 reconciled: false
