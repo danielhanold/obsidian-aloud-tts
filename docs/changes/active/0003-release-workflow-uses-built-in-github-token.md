@@ -2,7 +2,7 @@
 id: 3
 slug: 'release-workflow-uses-built-in-github-token'
 title: 'Release workflow uses built-in GitHub token'
-status: 'in-progress'
+status: 'implemented'
 priority: 'high'
 type: 'chore'
 deliverable: 'pr'
@@ -20,7 +20,7 @@ auto_groomable:
 hold:
 branch_prefix:
 branch: 'chore/release-workflow-uses-built-in-github-token'
-pr:
+pr: 'https://github.com/danielhanold/obsidian-aloud-tts/pull/3'
 blocked_by:
 reconciled: true
 ---
@@ -52,3 +52,12 @@ Changing when the release runs, the build, lint or test steps, the version-bump 
 ### 2026-10-26
 
 Unchanged against main 6803803: release.yml still uses secrets.GH_RELEASE_TOKEN and has no permissions block.
+
+## Build evidence
+
+<!-- docket:build-evidence:start -->
+command:  pnpm test
+result:   green
+head_sha: d8605b5499c94760f6b8a3849f3ca07709df135b
+ran_at:   2026-10-26T01:01:04Z
+<!-- docket:build-evidence:end -->
