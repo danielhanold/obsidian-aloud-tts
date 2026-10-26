@@ -1,4 +1,4 @@
-# Fix version-bump script trailing newline
+# Fix Version-Bump Script Trailing Newline
 
 Change 0002 — Fix version-bump script trailing newline
 
@@ -12,7 +12,7 @@ Change 0002 — Fix version-bump script trailing newline
 2. Reformat the four `packages/*/package.json` files on `main` so they end in a newline (run `pnpm run format`, which should touch only those files). Their version stays `0.15.2-rc1`.
 3. Verify by running `node version-bump.mjs specified 0.15.2-rc2` in a scratch checkout (or `git stash`-free copy), then `pnpm run format:check`; it must pass. Do not commit that bump.
 
-## Release follow-up (maintainer action, not code)
+## Release Follow-Up (Maintainer Action, Not Code)
 
 Once the fix is on `main`, run the bump workflow with `bump: rc` to produce `0.15.2-rc2`. The `0.15.2-rc1` tag is left in place.
 
