@@ -14,7 +14,7 @@ related: []
 discovered_from: [1]
 adrs: []
 spec: 'docs/superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md'
-plan:
+plan: 'docs/superpowers/plans/2026-10-25-fix-version-bump-script-trailing-newline.md'
 results:
 auto_groomable:
 hold:
@@ -31,6 +31,7 @@ reconciled: true
 | Artifact | Link |
 |---|---|
 | Spec | [2026-10-26-fix-version-bump-script-trailing-newline-design.md](../../superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) |
+| Plan | [2026-10-25-fix-version-bump-script-trailing-newline.md](../../superpowers/plans/2026-10-25-fix-version-bump-script-trailing-newline.md) |
 <!-- docket:artifacts:end -->
 
 ## Why
