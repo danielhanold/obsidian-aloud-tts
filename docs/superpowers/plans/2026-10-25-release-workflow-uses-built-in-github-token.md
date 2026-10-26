@@ -1,5 +1,5 @@
 <!-- docket:backlink:start (generated — do not hand-edit) -->
-> ↩ **[Change 0003 — Release workflow uses built-in GitHub token](../../changes/active/0003-release-workflow-uses-built-in-github-token.md)**
+> ↩ **[Change 0003 — Release workflow uses built-in GitHub token](../../changes/archive/2026-10-26-0003-release-workflow-uses-built-in-github-token.md)**
 <!-- docket:backlink:end -->
 
 # Release Workflow Uses Built-In GitHub Token Implementation Plan

@@ -2,7 +2,7 @@
 id: 3
 slug: 'release-workflow-uses-built-in-github-token'
 title: 'Release workflow uses built-in GitHub token'
-status: 'implemented'
+status: 'done'
 priority: 'high'
 type: 'chore'
 deliverable: 'pr'
@@ -31,6 +31,7 @@ reconciled: true
 | Artifact | Link |
 |---|---|
 | Spec | [2026-10-26-release-workflow-uses-built-in-github-token-design.md](../../superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md) |
+| Spec (merged) | [2026-10-26-release-workflow-uses-built-in-github-token-design.md](https://github.com/danielhanold/obsidian-aloud-tts/blob/main/docs/superpowers/specs/2026-10-26-release-workflow-uses-built-in-github-token-design.md) |
 | Plan | [2026-10-25-release-workflow-uses-built-in-github-token.md](../../superpowers/plans/2026-10-25-release-workflow-uses-built-in-github-token.md) |
 | Results | [2026-10-25-release-workflow-uses-built-in-github-token-results.md](../../results/2026-10-25-release-workflow-uses-built-in-github-token-results.md) |
 <!-- docket:artifacts:end -->
