@@ -2,7 +2,7 @@
 id: 2
 slug: 'fix-version-bump-script-trailing-newline'
 title: 'Fix version-bump script trailing newline'
-status: 'in-progress'
+status: 'implemented'
 priority: 'high'
 type: 'fix'
 deliverable: 'pr'
@@ -20,7 +20,7 @@ auto_groomable:
 hold:
 branch_prefix:
 branch: 'fix/fix-version-bump-script-trailing-newline'
-pr:
+pr: 'https://github.com/danielhanold/obsidian-aloud-tts/pull/2'
 blocked_by:
 reconciled: true
 ---
@@ -52,3 +52,12 @@ Reworking the bump or release workflows, changing the tagging scheme, or deletin
 ### 2026-10-26
 
 Unchanged against main 06bd09b: version-bump.mjs still writes JSON without a trailing newline and the four packages/*/package.json files lack one.
+
+## Build evidence
+
+<!-- docket:build-evidence:start -->
+command:  pnpm test
+result:   green
+head_sha: b554471c778a9219b05e9fbcaa72c7adbf8d3b88
+ran_at:   2026-10-26T00:40:06Z
+<!-- docket:build-evidence:end -->

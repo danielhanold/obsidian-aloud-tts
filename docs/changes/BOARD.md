@@ -1,12 +1,12 @@
 # Backlog
 
-**2 changes** — 🟢 1 in progress · ✅ 1 done
+**2 changes** — 🔵 1 built · ✅ 1 done
 
-## 🟢 In progress (1)
+## 🔵 Built (1)
 
-| # | Title | Priority | Type | Spec | Branch | State |
-|---|-------|----------|------|------|--------|-------|
-| [0002](active/0002-fix-version-bump-script-trailing-newline.md) | Fix version-bump script trailing newline | `high` | `fix` | [spec](../superpowers/specs/2026-10-26-fix-version-bump-script-trailing-newline-design.md) | `fix/fix-version-bump-script-trailing-newline` | building |
+| # | Title | Priority | Type | PR | State |
+|---|-------|----------|------|----|-------|
+| [0002](active/0002-fix-version-bump-script-trailing-newline.md) | Fix version-bump script trailing newline | `high` | `fix` | [#2](https://github.com/danielhanold/obsidian-aloud-tts/pull/2) | awaiting merge |
 
 ```mermaid
 graph TD
