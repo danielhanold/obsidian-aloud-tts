@@ -41,7 +41,7 @@ if (rcBumpRequested) {
 for (const packagePath of packagePaths) {
   const packageJson = JSON.parse(readFileSync(packagePath, "utf8"));
   packageJson.version = targetVersion;
-  writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
+  writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + "\n");
 }
 
 // Only update manifest.json and versions.json for full releases, not pre-releases
@@ -52,9 +52,9 @@ if (!isPreRelease) {
   // browser can fetch it from raw.githubusercontent.com/<repo>/HEAD/manifest.json.
   const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
   manifest.version = targetVersion;
-  writeFileSync("manifest.json", JSON.stringify(manifest, null, 2));
+  writeFileSync("manifest.json", JSON.stringify(manifest, null, 2) + "\n");
 
   const versions = JSON.parse(readFileSync("versions.json", "utf8"));
   versions[targetVersion] = manifest.minAppVersion;
-  writeFileSync("versions.json", JSON.stringify(versions, null, 2));
+  writeFileSync("versions.json", JSON.stringify(versions, null, 2) + "\n");
 }
